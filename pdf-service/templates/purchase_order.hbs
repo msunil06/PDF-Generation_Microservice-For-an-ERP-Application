@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Purchase Order #{{orderNumber}}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 11px;
+      color: #1a1a1a;
+      background: #fff;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-bottom: 16px;
+      border-bottom: 3px solid #1a237e;
+      margin-bottom: 16px;
+    }
+
+    .company-logo {
+      width: 120px;
+      height: auto;
+    }
+
+    .company-info h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1a237e;
+    }
+
+    .company-info p {
+      font-size: 10px;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    .po-badge {
+      text-align: right;
+    }
+
+    .po-badge .label {
+      font-size: 9px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .po-badge .number {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a237e;
+    }
+
+    .po-badge .status {
+      display: inline-block;
+      padding: 2px 8px;
+      background: #e8f5e9;
+      color: #2e7d32;
+      border-radius: 3px;
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .info-card {
+      background: #f8f9fa;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      padding: 8px 10px;
+    }
+
+    .info-card .card-title {
+      font-size: 8px;
+      font-weight: 700;
+      color: #1a237e;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 4px;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 3px;
+    }
+
+    .info-card .card-value {
+      font-size: 10px;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .info-card strong {
+      color: #1a1a1a;
+    }
+
+    .section-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #1a237e;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 6px;
+      padding-bottom: 3px;
+      border-bottom: 1px solid #1a237e;
+    }
+
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+      font-size: 10px;
+    }
+
+    .items-table thead tr {
+      background: #1a237e;
+      color: white;
+    }
+
+    .items-table thead th {
+      padding: 6px 8px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .items-table thead th.right { text-align: right; }
+    .items-table thead th.center { text-align: center; }
+
+    .items-table tbody tr {
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    .items-table tbody tr:nth-child(even) {
+      background: #f8f9ff;
+    }
+
+    .items-table tbody tr:hover {
+      background: #f0f4ff;
+    }
+
+    .items-table tbody td {
+      padding: 5px 8px;
+      vertical-align: top;
+      line-height: 1.4;
+    }
+
+    .items-table tbody td.right { text-align: right; }
+    .items-table tbody td.center { text-align: center; }
+
+    .item-name { font-weight: 600; color: #1a1a1a; }
+    .item-desc { font-size: 9px; color: #666; margin-top: 1px; }
+    .item-hsn { font-size: 9px; color: #888; }
+
+    .totals-section {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 16px;
+    }
+
+    .totals-table {
+      width: 320px;
+      border-collapse: collapse;
+    }
+
+    .totals-table td {
+      padding: 4px 10px;
+      font-size: 10px;
+    }
+
+    .totals-table .label { color: #555; }
+    .totals-table .value { text-align: right; color: #1a1a1a; }
+
+    .totals-table .subtotal { border-top: 1px solid #e0e0e0; }
+
+    .totals-table .grand-total td {
+      background: #1a237e;
+      color: white;
+      font-weight: 700;
+      font-size: 12px;
+      padding: 6px 10px;
+    }
+
+    .tax-row { color: #c62828 !important; }
+
+    .terms {
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      border-radius: 4px;
+      padding: 8px 10px;
+      margin-bottom: 12px;
+    }
+
+    .terms .terms-title {
+      font-size: 9px;
+      font-weight: 700;
+      color: #f57f17;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .terms ol {
+      padding-left: 14px;
+      margin: 0;
+    }
+
+    .terms li {
+      font-size: 9px;
+      color: #555;
+      line-height: 1.5;
+      margin-bottom: 2px;
+    }
+
+    .signature-block {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .sig-field {
+      width: 180px;
+      border-top: 1px solid #333;
+      padding-top: 4px;
+    }
+
+    .sig-field .sig-label {
+      font-size: 9px;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tamper-footer {
+      margin-top: 16px;
+      padding: 6px 10px;
+      background: #f1f8e9;
+      border: 1px solid #aed581;
+      border-radius: 3px;
+      font-size: 8px;
+      color: #558b2f;
+    }
+
+    .tamper-footer .hash-label {
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .chunk-indicator {
+      background: #e3f2fd;
+      border: 1px solid #90caf9;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 8px;
+      color: #1565c0;
+      margin-bottom: 8px;
+    }
+
+    .page-break { page-break-after: always; }
+  </style>
+</head>
+<body>
+
+  {{#if chunkIndex}}
+  <div class="chunk-indicator">
+    Continued from previous page — Part {{add chunkIndex 1}} of {{totalChunks}}
+  </div>
+  {{/if}}
+
+  {{#if isFirstPage}}
+
+  <div class="header">
+    <div>
+      <div class="company-info">
+        <h1>{{company.name}}</h1>
+        <p>
+          {{company.address}}<br>
+          GSTIN: {{company.gstin}}<br>
+          PAN: {{company.pan}}<br>
+          Tel: {{company.phone}} | Email: {{company.email}}
+        </p>
+      </div>
+    </div>
+    <div class="po-badge">
+      <div class="label">Purchase Order</div>
+      <div class="number">#{{orderNumber}}</div>
+      <div class="status">{{status}}</div>
+    </div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="card-title">Vendor Details</div>
+      <div class="card-value">
+        <strong>{{vendor.name}}</strong><br>
+        {{vendor.address}}<br>
+        GSTIN: {{vendor.gstin}}<br>
+        Contact: {{vendor.contact}}
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="card-title">Ship To</div>
+      <div class="card-value">
+        <strong>{{shipTo.name}}</strong><br>
+        {{shipTo.address}}<br>
+        {{shipTo.city}}, {{shipTo.state}} - {{shipTo.pincode}}
+      </div>
+    </div>
+    <div class="info-card">
+      <div class="card-title">PO Details</div>
+      <div class="card-value">
+        <strong>Date:</strong> {{formatDate orderDate}}<br>
+        <strong>Delivery By:</strong> {{formatDate deliveryDate}}<br>
+        <strong>Payment Terms:</strong> {{paymentTerms}}<br>
+        <strong>Currency:</strong> {{currency}}
+      </div>
+    </div>
+  </div>
+  {{/if}}
+
+  <div class="section-title">Line Items</div>
+  <table class="items-table">
+    <thead>
+      <tr>
+        <th style="width: 30px">#</th>
+        <th>Item / Description</th>
+        <th style="width: 70px">HSN Code</th>
+        <th class="center" style="width: 60px">Qty</th>
+        <th class="right" style="width: 80px">Unit Price</th>
+        <th class="center" style="width: 50px">GST %</th>
+        <th class="right" style="width: 90px">GST Amt</th>
+        <th class="right" style="width: 90px">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each line_items}}
+      <tr>
+        <td>{{add @index 1}}</td>
+        <td>
+          <div class="item-name">{{name}}</div>
+          {{#if description}}<div class="item-desc">{{description}}</div>{{/if}}
+        </td>
+        <td class="item-hsn">{{hsnCode}}</td>
+        <td class="center">{{quantity}} {{unit}}</td>
+        <td class="right">{{formatCurrency unitPrice}}</td>
+        <td class="center">{{gstRate}}%</td>
+        <td class="right tax-row">{{formatCurrency gstAmount}}</td>
+        <td class="right"><strong>{{formatCurrency totalAmount}}</strong></td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  {{#if isLastPage}}
+
+  <div class="totals-section">
+    <table class="totals-table">
+      <tr class="subtotal">
+        <td class="label">Subtotal (before tax)</td>
+        <td class="value">{{formatCurrency totals.subtotal}}</td>
+      </tr>
+      <tr>
+        <td class="label tax-row">CGST</td>
+        <td class="value tax-row">{{formatCurrency totals.cgst}}</td>
+      </tr>
+      <tr>
+        <td class="label tax-row">SGST</td>
+        <td class="value tax-row">{{formatCurrency totals.sgst}}</td>
+      </tr>
+      {{#if totals.igst}}
+      <tr>
+        <td class="label tax-row">IGST</td>
+        <td class="value tax-row">{{formatCurrency totals.igst}}</td>
+      </tr>
+      {{/if}}
+      <tr class="grand-total">
+        <td>GRAND TOTAL</td>
+        <td>{{formatCurrency totals.grandTotal}}</td>
+      </tr>
+    </table>
+  </div>
+
+  {{#if terms}}
+  <div class="terms">
+    <div class="terms-title">Terms &amp; Conditions</div>
+    <ol>
+      {{#each terms}}
+      <li>{{this}}</li>
+      {{/each}}
+    </ol>
+  </div>
+  {{/if}}
+
+  <div class="signature-block">
+    <div class="sig-field">
+      <div class="sig-label">Prepared By</div>
+      {{preparedBy}}
+    </div>
+    <div class="sig-field">
+      <div class="sig-label">Approved By</div>
+      {{approvedBy}}
+    </div>
+    <div class="sig-field">
+      <div class="sig-label">Authorized Signatory</div>
+      For {{company.name}}
+    </div>
+  </div>
+  {{/if}}
+
+</body>
+</html>

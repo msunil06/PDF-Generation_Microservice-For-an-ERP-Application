@@ -1,0 +1,47 @@
+{
+  "name": "pdf-microservice",
+  "version": "1.0.0",
+  "description": "PDF Generation Microservice for ERP Application",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest --coverage --forceExit",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/",
+    "docker:build": "docker build -t pdf-microservice .",
+    "docker:run": "docker run -p 3001:3001 --env-file .env pdf-microservice",
+    "generate:sample": "node scripts/generate-samples.js",
+    "generate:custom": "node scripts/generate-custom.js"
+  },
+  "dependencies": {
+    "@bull-board/api": "^5.9.1",
+    "@bull-board/express": "^5.9.1",
+    "archiver": "^6.0.1",
+    "aws-sdk": "^2.1474.0",
+    "bull": "^4.12.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-basic-auth": "^1.2.1",
+    "express-rate-limit": "^7.1.5",
+    "handlebars": "^4.7.8",
+    "helmet": "^7.1.0",
+    "ioredis": "^5.3.2",
+    "morgan": "^1.10.0",
+    "pdf-lib": "^1.17.1",
+    "pg": "^8.11.3",
+    "puppeteer": "^21.5.0",
+    "uuid": "^9.0.0",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.54.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.14",
+    "supertest": "^6.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

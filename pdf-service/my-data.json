@@ -1,0 +1,66 @@
+{
+  "type": "purchase_order",
+  "documentId": "PO-CUSTOM-001",
+  "data": {
+    "orderNumber": "PO-CUSTOM-001",
+    "status": "Approved",
+    "orderDate": "2026-10-18",
+    "deliveryDate": "2026-10-30",
+    "paymentTerms": "Net 30 Days",
+    "currency": "INR",
+    "company": {
+      "name": "My Company Pvt Ltd",
+      "address": "Floor 3, Skyline Towers, MG Road, Bengaluru, Karnataka - 560001",
+      "gstin": "29AABCU9603R1ZX",
+      "pan": "AABCU9603R",
+      "phone": "+91 98765 00000",
+      "email": "accounts@mycompany.com"
+    },
+    "vendor": {
+      "name": "Vendor Supplies Inc",
+      "address": "123 Market Road, Sector 5, Mumbai, Maharashtra - 400001",
+      "gstin": "27AAPFU0939F1ZV",
+      "contact": "John Doe (+91 91234 56789)"
+    },
+    "shipTo": {
+      "name": "My Warehouse",
+      "address": "Warehouse 4B, Industrial Park, Bengaluru - 560099",
+      "contact": "Logistics Team"
+    },
+    "line_items": [
+      {
+        "itemNumber": 1,
+        "name": "Custom Hardware / Service 1",
+        "description": "Custom specifications entered by user",
+        "hsnCode": "8471",
+        "quantity": 5,
+        "unit": "Nos",
+        "unitPrice": 12000,
+        "gstRate": 18,
+        "gstAmount": 10800,
+        "totalAmount": 70800
+      },
+      {
+        "itemNumber": 2,
+        "name": "Custom Product 2",
+        "description": "Additional product description",
+        "hsnCode": "8517",
+        "quantity": 2,
+        "unit": "Nos",
+        "unitPrice": 5000,
+        "gstRate": 18,
+        "gstAmount": 1800,
+        "totalAmount": 11800
+      }
+    ],
+    "totals": {
+      "subtotal": 70000,
+      "cgst": 6300,
+      "sgst": 6300,
+      "igst": 0,
+      "grandTotal": 82600,
+      "amountInWords": "Eighty-Two Thousand Six Hundred Rupees Only"
+    },
+    "notes": "Enter any custom terms, delivery instructions, or notes here."
+  }
+}

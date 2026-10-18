@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tax Invoice #{{coalesce invoiceNumber "VI-2026-00001"}}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 9.5px;
+      color: #1e293b;
+      background: #ffffff;
+      line-height: 1.45;
+      padding: 0;
+    }
+
+    .invoice-top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+
+    .brand-logo-container {
+      max-width: 320px;
+    }
+
+    .brand-logo-img {
+      max-height: 52px;
+      max-width: 260px;
+      object-fit: contain;
+    }
+
+    .issuer-logo-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .issuer-emblem {
+      flex-shrink: 0;
+    }
+
+    .issuer-text-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .issuer-company-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #102a43;
+      line-height: 1.2;
+      letter-spacing: -0.2px;
+    }
+
+    .issuer-company-sub {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      color: #64748b;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .invoice-title-block {
+      text-align: right;
+    }
+
+    .invoice-main-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #102a43;
+      letter-spacing: 0.5px;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    .invoice-code {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-top: 3px;
+      margin-bottom: 8px;
+    }
+
+    .meta-line {
+      font-size: 9.5px;
+      color: #334155;
+      margin-top: 1.5px;
+    }
+
+    .meta-line .label {
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .meta-line .val {
+      font-weight: 500;
+      color: #334155;
+    }
+
+    .parties-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .party-card {
+      border: 1px solid #cfdce8;
+      border-radius: 4px;
+      overflow: hidden;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .party-card-header {
+      background: #e8f1f8;
+      color: #102a43;
+      font-weight: 700;
+      font-size: 9px;
+      letter-spacing: 0.8px;
+      padding: 6px 10px;
+      text-transform: uppercase;
+      border-bottom: 1px solid #cfdce8;
+    }
+
+    .party-card-body {
+      padding: 9px 10px;
+      font-size: 9.5px;
+      line-height: 1.5;
+      color: #334155;
+      flex: 1;
+    }
+
+    .party-name {
+      font-size: 11px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .party-address {
+      color: #475569;
+      margin-bottom: 6px;
+      white-space: pre-line;
+    }
+
+    .party-item {
+      margin-top: 2px;
+      font-size: 9px;
+    }
+
+    .party-item strong {
+      color: #0f172a;
+    }
+
+    .details-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .details-table tr {
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .details-table tr:last-child {
+      border-bottom: none;
+    }
+
+    .details-table td {
+      padding: 3.5px 0;
+      font-size: 9px;
+    }
+
+    .details-table td.dt-key {
+      font-weight: 600;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      width: 50%;
+    }
+
+    .details-table td.dt-val {
+      font-weight: 700;
+      color: #0f172a;
+      text-align: right;
+      width: 50%;
+    }
+
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 0px;
+      font-size: 9px;
+      border: 1px solid #cfdce8;
+    }
+
+    .items-table thead tr {
+      background: #102a43;
+      color: #ffffff;
+    }
+
+    .items-table thead th {
+      padding: 6px 7px;
+      font-size: 8.5px;
+      font-weight: 700;
+      text-align: left;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-right: 1px solid rgba(255, 255, 255, 0.15);
+      white-space: nowrap;
+    }
+
+    .items-table thead th:last-child {
+      border-right: none;
+    }
+
+    .items-table thead th.right { text-align: right; }
+    .items-table thead th.center { text-align: center; }
+
+    .items-table tbody tr {
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .items-table tbody td {
+      padding: 6px 7px;
+      vertical-align: top;
+      border-right: 1px solid #e2e8f0;
+      color: #334155;
+    }
+
+    .items-table tbody td:last-child {
+      border-right: none;
+    }
+
+    .items-table tbody td.right { text-align: right; }
+    .items-table tbody td.center { text-align: center; }
+
+    .item-title {
+      font-weight: 700;
+      color: #0f172a;
+      font-size: 9.5px;
+    }
+
+    .item-desc {
+      font-size: 8px;
+      color: #64748b;
+      margin-top: 2px;
+      line-height: 1.35;
+    }
+
+    .items-table tfoot td {
+      padding: 5px 8px;
+      font-size: 9.5px;
+    }
+
+    .border-none {
+      border: none !important;
+      background: transparent !important;
+    }
+
+    .summary-label-cell {
+      text-align: right;
+      font-weight: 700;
+      color: #0f172a;
+      border-left: 1px solid #cfdce8;
+      border-right: 1px solid #e2e8f0;
+      border-top: 1px solid #cfdce8;
+      border-bottom: 1px solid #e2e8f0;
+      background: #ffffff;
+      padding-right: 14px !important;
+    }
+
+    .summary-value-cell {
+      text-align: right;
+      font-weight: 700;
+      color: #0f172a;
+      border-right: 1px solid #cfdce8;
+      border-top: 1px solid #cfdce8;
+      border-bottom: 1px solid #e2e8f0;
+      background: #ffffff;
+      white-space: nowrap;
+      padding-right: 8px !important;
+    }
+
+    .grand-total-label-cell {
+      text-align: right;
+      font-weight: 800;
+      color: #102a43;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      background: #e8f1f8;
+      border-left: 1px solid #cfdce8;
+      border-right: 1px solid #cfdce8;
+      border-top: 1px solid #cfdce8;
+      border-bottom: 1px solid #cfdce8;
+      padding: 8px 14px !important;
+    }
+
+    .grand-total-value-cell {
+      text-align: right;
+      font-weight: 800;
+      color: #102a43;
+      font-size: 12px;
+      background: #e8f1f8;
+      border-right: 1px solid #cfdce8;
+      border-top: 1px solid #cfdce8;
+      border-bottom: 1px solid #cfdce8;
+      padding: 8px 8px !important;
+      white-space: nowrap;
+    }
+
+    .usd-ref-label-cell {
+      text-align: right;
+      font-weight: 700;
+      color: #475569;
+      border-left: 1px solid #cfdce8;
+      border-right: 1px solid #e2e8f0;
+      border-bottom: 1px solid #cfdce8;
+      background: #ffffff;
+      padding-right: 14px !important;
+    }
+
+    .usd-ref-value-cell {
+      text-align: right;
+      font-weight: 700;
+      color: #0f172a;
+      border-right: 1px solid #cfdce8;
+      border-bottom: 1px solid #cfdce8;
+      background: #ffffff;
+      white-space: nowrap;
+      padding-right: 8px !important;
+    }
+      border-bottom: 1px solid #e2e8f0;
+      background: #ffffff;
+      white-space: nowrap;
+    }
+
+    .words-banner {
+      background: #f8fafc;
+      border: 1px solid #cfdce8;
+      border-radius: 4px;
+      padding: 7px 12px;
+      margin-top: 14px;
+      margin-bottom: 14px;
+      font-size: 9.5px;
+      color: #334155;
+    }
+
+    .words-banner strong {
+      color: #0f172a;
+    }
+
+    .bank-card {
+      border: 1px solid #cfdce8;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 14px;
+      background: #ffffff;
+    }
+
+    .bank-card-header {
+      background: #e8f1f8;
+      color: #102a43;
+      font-weight: 700;
+      font-size: 9px;
+      letter-spacing: 0.8px;
+      padding: 5px 10px;
+      text-transform: uppercase;
+      border-bottom: 1px solid #cfdce8;
+    }
+
+    .bank-card-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding: 8px 12px;
+      gap: 16px;
+    }
+
+    .bank-col {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .bank-field-label {
+      font-size: 8px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .bank-field-value {
+      font-size: 10px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .footer-note {
+      font-size: 8.5px;
+      color: #64748b;
+      margin-bottom: 18px;
+      line-height: 1.4;
+    }
+
+    .signatory-container {
+      display: flex;
+      justify-content: flex-start;
+      margin-top: 15px;
+      margin-bottom: 10px;
+    }
+
+    .signatory-box {
+      min-width: 200px;
+      text-align: left;
+    }
+
+    .signatory-company {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 45px;
+    }
+
+    .signatory-label {
+      font-size: 9px;
+      color: #475569;
+    }
+
+    .irn-block {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 4px;
+      padding: 6px 10px;
+      margin-bottom: 12px;
+      font-size: 8.5px;
+      color: #166534;
+    }
+
+    .irn-block strong {
+      color: #14532d;
+    }
+  </style>
+</head>
+<body>
+
+  {{#if isFirstPage}}
+
+  <div class="invoice-top-header">
+    <div class="brand-logo-container">
+      {{#if company.logo}}
+        <img src="{{company.logo}}" class="brand-logo-img" alt="{{company.name}}">
+      {{else}}
+
+        <div class="issuer-logo-badge">
+          <div class="issuer-emblem">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="36" height="36" rx="8" fill="#102A43"/>
+              <path d="M10 26L18 10L26 26H21.5L18 18.5L14.5 26H10Z" fill="#2563EB"/>
+              <circle cx="18" cy="14" r="2.4" fill="#38BDF8"/>
+            </svg>
+          </div>
+          <div class="issuer-text-group">
+            <div class="issuer-company-title">{{coalesce company.name "Acme ERP Solutions Pvt Ltd"}}</div>
+            <div class="issuer-company-sub">Tax Invoice · GST Registered</div>
+          </div>
+        </div>
+      {{/if}}
+    </div>
+
+    <div class="invoice-title-block">
+      <div class="invoice-main-title">TAX INVOICE</div>
+      <div class="invoice-code">{{coalesce invoiceNumber "VI-2026-00001"}}</div>
+      <div class="meta-line">
+        <span class="label">Invoice Date:</span> <span class="val">{{formatDate invoiceDate}}</span>
+      </div>
+      <div class="meta-line">
+        <span class="label">Due Date:</span> <span class="val">{{formatDate dueDate}}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="parties-grid">
+
+    <div class="party-card">
+      <div class="party-card-header">Bill From</div>
+      <div class="party-card-body">
+        <div class="party-name">{{coalesce company.name "Acme ERP Solutions Pvt Ltd"}}</div>
+        <div class="party-address">{{coalesce company.address "101, Tech Park, Whitefield, Bengaluru, Karnataka - 560066"}}</div>
+        <div class="party-item"><strong>Seller GSTIN:</strong> {{coalesce company.gstin "29AABCU9603R1ZX"}}</div>
+        {{#if company.pan}}
+        <div class="party-item"><strong>PAN:</strong> {{company.pan}}</div>
+        {{/if}}
+        {{#if company.email}}
+        <div class="party-item"><strong>Email:</strong> {{company.email}}</div>
+        {{/if}}
+        {{#if company.phone}}
+        <div class="party-item"><strong>Phone:</strong> {{company.phone}}</div>
+        {{/if}}
+      </div>
+    </div>
+
+    <div class="party-card">
+      <div class="party-card-header">Bill To</div>
+      <div class="party-card-body">
+        <div class="party-name">{{coalesce customer.name vendor.name "ABC Supplies"}}</div>
+        <div class="party-address">{{coalesce customer.address vendor.address "Ground Floor, C 14, Phase V, Udyog Vihar, Sector 19\nGurugram, Haryana, 122016, India"}}</div>
+        {{#if (or customer.contact vendor.contact)}}
+        <div class="party-item"><strong>Attn:</strong> {{coalesce customer.contact vendor.contact}}</div>
+        {{else}}
+        <div class="party-item"><strong>Attn:</strong> Harsh Pathak</div>
+        {{/if}}
+        {{#if (or customer.email vendor.email)}}
+        <div class="party-item"><strong>Email:</strong> {{coalesce customer.email vendor.email}}</div>
+        {{else}}
+        <div class="party-item"><strong>Email:</strong> harshpathaksmt@gmail.com</div>
+        {{/if}}
+        {{#if (or customer.phone vendor.phone)}}
+        <div class="party-item"><strong>Phone:</strong> {{coalesce customer.phone vendor.phone}}</div>
+        {{else}}
+        <div class="party-item"><strong>Phone:</strong> +917078452542</div>
+        {{/if}}
+        {{#if (or customer.gstin vendor.gstin)}}
+        <div class="party-item"><strong>Buyer GSTIN:</strong> {{coalesce customer.gstin vendor.gstin}}</div>
+        {{/if}}
+      </div>
+    </div>
+
+    <div class="party-card">
+      <div class="party-card-header">Invoice Details</div>
+      <div class="party-card-body">
+        <table class="details-table">
+          <tr>
+            <td class="dt-key">BOOKING</td>
+            <td class="dt-val">{{coalesce poReference bookingReference orderNumber "EID0987917"}}</td>
+          </tr>
+          <tr>
+            <td class="dt-key">CONTAINER</td>
+            <td class="dt-val">{{coalesce containerNumber container "AXIU8485054"}}</td>
+          </tr>
+          <tr>
+            <td class="dt-key">HS CODE</td>
+            <td class="dt-val">{{coalesce hsCode primaryHsn "870830"}}</td>
+          </tr>
+          <tr>
+            <td class="dt-key">PAYMENT</td>
+            <td class="dt-val">{{coalesce paymentStatus paymentTerms "Pending"}}</td>
+          </tr>
+          <tr>
+            <td class="dt-key">PLACE OF SUPPLY</td>
+            <td class="dt-val">{{coalesce placeOfSupply "Haryana (06)"}}</td>
+          </tr>
+          <tr>
+            <td class="dt-key">REVERSE CHARGE</td>
+            <td class="dt-val">{{coalesce reverseCharge "To confirm"}}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  {{/if}}
+
+  <table class="items-table">
+    <thead>
+      <tr>
+        <th style="width: 25px;" class="center">#</th>
+        <th>Description / SAC</th>
+        <th style="width: 65px;" class="center">HSN/SAC</th>
+        <th class="right" style="width: 50px;">Qty</th>
+        <th class="right" style="width: 75px;">Rate</th>
+        <th class="right" style="width: 85px;">Taxable Value</th>
+        <th class="right" style="width: 65px;">CGST</th>
+        <th class="right" style="width: 65px;">SGST</th>
+        <th class="right" style="width: 65px;">IGST</th>
+        <th class="right" style="width: 90px;">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each line_items}}
+      <tr>
+        <td class="center" style="color: #64748b;">{{coalesce itemNumber (add @index 1)}}</td>
+        <td>
+          <div class="item-title">{{name}}</div>
+          {{#if description}}
+          <div class="item-desc">{{description}}</div>
+          {{/if}}
+        </td>
+        <td class="center" style="color: #475569;">{{coalesce hsnCode "996521"}}</td>
+        <td class="right">{{coalesce quantity 1}} {{coalesce unit "Nos"}}</td>
+        <td class="right">{{formatCurrency (coalesce rate unitPrice)}}</td>
+        <td class="right">{{formatCurrency (coalesce taxableValue (multiply quantity unitPrice))}}</td>
+        <td class="right">{{formatCurrency (coalesce cgst cgstAmount 0)}}</td>
+        <td class="right">{{formatCurrency (coalesce sgst sgstAmount 0)}}</td>
+        <td class="right">{{formatCurrency (coalesce igst gstAmount 0)}}</td>
+        <td class="right"><strong>{{formatCurrency (coalesce total totalAmount)}}</strong></td>
+      </tr>
+      {{/each}}
+    </tbody>
+
+    {{#if isLastPage}}
+    <tfoot>
+
+      <tr>
+        <td colspan="7" class="border-none"></td>
+        <td colspan="2" class="summary-label-cell">Taxable Subtotal</td>
+        <td class="summary-value-cell">{{formatCurrency (coalesce totals.subtotal totals.taxableSubtotal)}}</td>
+      </tr>
+
+      {{#if totals.cgst}}
+      <tr>
+        <td colspan="7" class="border-none"></td>
+        <td colspan="2" class="summary-label-cell">CGST</td>
+        <td class="summary-value-cell">{{formatCurrency totals.cgst}}</td>
+      </tr>
+      {{/if}}
+
+      {{#if totals.sgst}}
+      <tr>
+        <td colspan="7" class="border-none"></td>
+        <td colspan="2" class="summary-label-cell">SGST</td>
+        <td class="summary-value-cell">{{formatCurrency totals.sgst}}</td>
+      </tr>
+      {{/if}}
+
+      <tr>
+        <td colspan="7" class="border-none"></td>
+        <td colspan="2" class="summary-label-cell">Total GST</td>
+        <td class="summary-value-cell">{{formatCurrency (coalesce totals.igst totals.totalTax totals.taxAmount totals.gst "0")}}</td>
+      </tr>
+
+      <tr>
+        <td colspan="7" class="border-none"></td>
+        <td colspan="2" class="grand-total-label-cell">GRAND TOTAL</td>
+        <td class="grand-total-value-cell">{{formatCurrency totals.grandTotal}}</td>
+      </tr>
+
+      {{#if (or usdReferenceTotal totals.usdReferenceTotal)}}
+      <tr>
+        <td colspan="7" class="border-none"></td>
+        <td colspan="2" class="usd-ref-label-cell">USD Reference Total</td>
+        <td class="usd-ref-value-cell">{{coalesce usdReferenceTotal totals.usdReferenceTotal "$300.00"}}</td>
+      </tr>
+      {{/if}}
+    </tfoot>
+    {{/if}}
+  </table>
+
+  {{#if isLastPage}}
+
+  <div class="words-banner">
+    <strong>Amount in words:</strong> {{coalesce totals.amountInWords "Rupees Thirty Thousand Six Hundred Ninety Only."}}
+  </div>
+
+  <div class="bank-card">
+    <div class="bank-card-header">Bank Details</div>
+    <div class="bank-card-body">
+      <div class="bank-col">
+        <div>
+          <div class="bank-field-label">ACCOUNT NAME</div>
+          <div class="bank-field-value">{{coalesce company.bankDetails.accountName company.name "Acme ERP Solutions Pvt Ltd"}}</div>
+        </div>
+        <div>
+          <div class="bank-field-label">ACCOUNT NUMBER</div>
+          <div class="bank-field-value">{{coalesce company.bankDetails.accountNumber "5020 0063 9289 82"}}</div>
+        </div>
+      </div>
+      <div class="bank-col">
+        <div>
+          <div class="bank-field-label">ACCOUNT TYPE</div>
+          <div class="bank-field-value">{{coalesce company.bankDetails.accountType "Current Account"}}</div>
+        </div>
+        <div>
+          <div class="bank-field-label">IFSC</div>
+          <div class="bank-field-value">{{coalesce company.bankDetails.ifscCode "HDFC0002024"}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    {{coalesce notes exchangeRateNote "Exchange rate: USD charges converted at INR 90 per USD, as stated in the source invoice."}}
+  </div>
+
+  {{#if irnNumber}}
+
+  <div class="irn-block">
+    <strong>IRN:</strong> {{irnNumber}}<br>
+    <strong>Ack No:</strong> {{ackNumber}} | <strong>Ack Date:</strong> {{formatDate ackDate}}
+  </div>
+  {{/if}}
+
+  <div class="signatory-container">
+    <div class="signatory-box">
+      <div class="signatory-company">For {{coalesce company.name "Acme ERP Solutions Pvt Ltd"}}</div>
+      <div class="signatory-label">Authorized Signatory</div>
+    </div>
+  </div>
+  {{/if}}
+
+</body>
+</html>

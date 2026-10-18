@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Production-ready PDF generation microservice for ERP applications with real-time purchasing, GST-compliant invoices, purchase orders, and HMAC-SHA256 tamper evidence.">
+  <title>ApexERP — PDF Generation Microservice & Purchase Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </div>
+        <div>
+          <span class="brand-name">ApexERP</span>
+          <span class="brand-tag">PDF Microservice v1.0</span>
+        </div>
+      </div>
+
+      <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Toggle navigation" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+
+      <nav id="navTabs" class="nav-tabs" aria-label="Main Navigation">
+        <button id="navTabPurchase" class="nav-tab active" data-tab="purchaseTab">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          Purchase & Generate
+        </button>
+        <button id="navTabVerify" class="nav-tab" data-tab="verifyTab">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+          Tamper Verifier
+        </button>
+        <button id="navTabMonitor" class="nav-tab" data-tab="monitorTab">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 12h10"/><path d="M12 7v10"/></svg>
+          Engine Health
+        </button>
+      </nav>
+
+      <div class="header-actions">
+        <div id="serviceStatusPill" class="status-pill status-online" title="Service Connected">
+          <span class="status-dot"></span>
+          <span id="serviceStatusText">Engine Online</span>
+          <span id="serviceLatency" class="latency-badge">12ms</span>
+        </div>
+        <a id="btnOpenQueues" href="/admin/queues" target="_blank" class="btn-ghost" title="Open Bull Board Queue Monitor">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+          Queues
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <div id="purchaseTab" class="tab-pane active">
+      <div class="hero-bar">
+        <div>
+          <h1 class="hero-title">ERP Document Generation Studio</h1>
+          <p class="hero-subtitle">Select catalog objects to purchase or customize line items, then generate cryptographic, tamper-evident PDFs instantly.</p>
+        </div>
+        <div class="doc-type-toggle" role="group" aria-label="Document Type Selection">
+          <button id="docTypePO" class="type-btn active" data-type="purchase_order">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            Purchase Order
+          </button>
+          <button id="docTypeInvoice" class="type-btn" data-type="invoice">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 6v12"/></svg>
+            Tax Invoice (GST)
+          </button>
+        </div>
+      </div>
+
+      <div class="studio-grid">
+
+        <section class="studio-left">
+
+          <div class="card catalog-card">
+            <div class="card-header">
+              <div class="card-header-title">
+                <span class="badge-icon">📦</span>
+                <h3>Enterprise Hardware & Services Catalog</h3>
+              </div>
+              <span class="card-subtitle-badge">Click item to add to purchase</span>
+            </div>
+            <div class="catalog-grid" id="catalogGrid">
+
+            </div>
+          </div>
+
+          <div class="card add-item-card">
+            <div class="card-header">
+              <div class="card-header-title">
+                <span class="badge-icon">➕</span>
+                <h3>Add Custom Line Item</h3>
+              </div>
+            </div>
+            <form id="customItemForm" class="add-item-form">
+              <div class="form-row">
+                <div class="form-group flex-2">
+                  <label for="customItemName">Item / Description</label>
+                  <input type="text" id="customItemName" placeholder="e.g. Cisco SFP+ 10G Optical Transceiver" required>
+                </div>
+                <div class="form-group flex-1">
+                  <label for="customItemHsn">HSN / SAC</label>
+                  <input type="text" id="customItemHsn" placeholder="8517" value="8471" required>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="customItemQty">Quantity</label>
+                  <input type="number" id="customItemQty" min="1" max="1000" value="1" required>
+                </div>
+                <div class="form-group">
+                  <label for="customItemUnit">Unit</label>
+                  <select id="customItemUnit">
+                    <option value="Nos">Nos (Units)</option>
+                    <option value="Sets">Sets</option>
+                    <option value="Hours">Hours</option>
+                    <option value="Year">Year</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="customItemPrice">Unit Price (₹)</label>
+                  <input type="number" id="customItemPrice" min="0" step="100" placeholder="15000" required>
+                </div>
+                <div class="form-group">
+                  <label for="customItemGst">GST Rate (%)</label>
+                  <select id="customItemGst">
+                    <option value="18">18% (Standard)</option>
+                    <option value="12">12%</option>
+                    <option value="28">28%</option>
+                    <option value="5">5%</option>
+                    <option value="0">0% (Exempt)</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" id="btnAddCustomItem" class="btn-secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Add Item to Document
+              </button>
+            </form>
+          </div>
+
+          <div class="card meta-card">
+            <div class="card-header">
+              <div class="card-header-title">
+                <span class="badge-icon">🏢</span>
+                <h3>Organization & Vendor Parties</h3>
+              </div>
+              <button type="button" id="btnFillPreset" class="btn-text" title="Switch between preset sample organizations">Load Enterprise Preset</button>
+            </div>
+
+            <div class="meta-sections">
+              <div class="meta-col">
+                <h4 class="meta-heading">Issuer / Company (Our Organization)</h4>
+                <div class="form-group">
+                  <label for="metaCompanyName">Company Name</label>
+                  <input type="text" id="metaCompanyName" value="Acme ERP Solutions Pvt Ltd">
+                </div>
+                <div class="form-row">
+                  <div class="form-group flex-1">
+                    <label for="metaCompanyGstin">Company GSTIN</label>
+                    <input type="text" id="metaCompanyGstin" value="29AABCU9603R1ZX">
+                  </div>
+                  <div class="form-group flex-1">
+                    <label for="metaCompanyPan">Company PAN</label>
+                    <input type="text" id="metaCompanyPan" value="AABCU9603R">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="metaCompanyAddress">Billing Address</label>
+                  <input type="text" id="metaCompanyAddress" value="101, Tech Park, Whitefield, Bengaluru - 560066">
+                </div>
+              </div>
+
+              <div class="meta-col">
+                <h4 class="meta-heading">Vendor / Recipient Party</h4>
+                <div class="form-group">
+                  <label for="metaVendorName">Vendor / Client Name</label>
+                  <input type="text" id="metaVendorName" value="Global Tech Suppliers LLP">
+                </div>
+                <div class="form-row">
+                  <div class="form-group flex-1">
+                    <label for="metaVendorGstin">Vendor GSTIN</label>
+                    <input type="text" id="metaVendorGstin" value="27AAPFU0939F1ZV">
+                  </div>
+                  <div class="form-group flex-1">
+                    <label for="metaVendorContact">Contact Person</label>
+                    <input type="text" id="metaVendorContact" value="Rajesh Sharma (+91 98765 43210)">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="metaVendorAddress">Vendor Address</label>
+                  <input type="text" id="metaVendorAddress" value="42, Industrial Area, Andheri East, Mumbai - 400093">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row meta-dates">
+              <div class="form-group flex-1">
+                <label id="lblDocNumber" for="metaDocNumber">Order Number</label>
+                <input type="text" id="metaDocNumber" value="PO-2026-8801">
+              </div>
+              <div class="form-group flex-1">
+                <label id="lblDocDate" for="metaDocDate">Order Date</label>
+                <input type="date" id="metaDocDate">
+              </div>
+              <div class="form-group flex-1">
+                <label id="lblDocDueDate" for="metaDocDueDate">Delivery Date</label>
+                <input type="date" id="metaDocDueDate">
+              </div>
+              <div class="form-group flex-1">
+                <label for="metaPaymentTerms">Payment Terms</label>
+                <input type="text" id="metaPaymentTerms" value="Net 30 Days">
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="studio-right">
+
+          <div class="card summary-card">
+            <div class="summary-header">
+              <div>
+                <h3 id="summaryTitle">Purchase Order Items</h3>
+                <span id="summaryCountBadge" class="item-count-badge">2 items</span>
+              </div>
+              <button id="btnClearItems" class="btn-danger-text" title="Clear all items">Clear All</button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="items-table" id="itemsTable">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th style="width: 80px;">Qty</th>
+                    <th>Price</th>
+                    <th>GST</th>
+                    <th>Total</th>
+                    <th style="width: 36px;"></th>
+                  </tr>
+                </thead>
+                <tbody id="itemsTableBody">
+
+                </tbody>
+              </table>
+            </div>
+
+            <div class="totals-breakdown">
+              <div class="totals-row">
+                <span>Subtotal (Excl. Tax)</span>
+                <span id="totalSubtotal">₹0.00</span>
+              </div>
+              <div class="totals-row">
+                <span id="lblTaxType">IGST (Inter-state 18%)</span>
+                <span id="totalTax">₹0.00</span>
+              </div>
+              <div class="totals-row grand-total-row">
+                <span>Grand Total</span>
+                <span id="totalGrand">₹0.00</span>
+              </div>
+              <div class="words-row">
+                <span class="words-label">In Words:</span>
+                <span id="totalInWords" class="words-text">Zero Rupees Only</span>
+              </div>
+            </div>
+
+            <div class="action-buttons-container">
+              <button id="btnGeneratePdf" class="btn-primary-action">
+                <span class="btn-spinner" id="btnSpinner"></span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                <span id="btnGenerateText">Generate PDF & Purchase</span>
+              </button>
+            </div>
+
+            <div id="generationProgress" class="generation-progress">
+              <div class="progress-header">
+                <span class="progress-title" id="progressTitle">Preparing document…</span>
+                <span class="progress-percentage" id="progressPercent">0%</span>
+              </div>
+              <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="progressBarFill"></div>
+              </div>
+              <div class="progress-steps">
+                <div class="progress-step" id="stepValidate">
+                  <span class="progress-step-icon">○</span>
+                  <span>Validating document data</span>
+                </div>
+                <div class="progress-step" id="stepTemplate">
+                  <span class="progress-step-icon">○</span>
+                  <span>Compiling Handlebars template</span>
+                </div>
+                <div class="progress-step" id="stepRender">
+                  <span class="progress-step-icon">○</span>
+                  <span>Rendering PDF via Puppeteer</span>
+                </div>
+                <div class="progress-step" id="stepSign">
+                  <span class="progress-step-icon">○</span>
+                  <span>Computing HMAC-SHA256 signature</span>
+                </div>
+                <div class="progress-step" id="stepComplete">
+                  <span class="progress-step-icon">○</span>
+                  <span>PDF ready for preview</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="pdfResultCard" class="card pdf-result-card hidden">
+            <div class="pdf-result-header">
+              <div class="pdf-result-info">
+                <div class="badge-success">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                  PDF Rendered
+                </div>
+                <span id="pdfRenderTime" class="render-speed-badge">⚡ 1.8s</span>
+                <span id="pdfFileSize" class="size-badge">51.2 KB</span>
+              </div>
+              <div class="pdf-result-actions">
+                <button id="btnDownloadPdf" class="btn-action-sm" title="Download PDF file">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Download
+                </button>
+                <button id="btnPrintPdf" class="btn-action-sm" title="Print document">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+                  Print
+                </button>
+                <button id="btnOpenNewTab" class="btn-action-sm" title="Open PDF in new tab">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  Expand
+                </button>
+              </div>
+            </div>
+
+            <div class="hmac-ribbon">
+              <div class="hmac-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <span>HMAC-SHA256 Tamper Proof Hash:</span>
+              </div>
+              <div class="hmac-code-wrapper">
+                <code id="hmacDisplayCode" class="hmac-code">Computing...</code>
+                <button id="btnCopyHmac" class="btn-copy-icon" title="Copy Hash">📋</button>
+              </div>
+            </div>
+
+            <div class="preview-frame-container">
+              <iframe id="pdfFrame" class="pdf-frame" title="PDF Document Preview"></iframe>
+            </div>
+          </div>
+
+        </aside>
+      </div>
+    </div>
+
+    <div id="verifyTab" class="tab-pane">
+      <div class="hero-bar">
+        <div>
+          <h2 class="hero-title">Cryptographic Tamper Verifier</h2>
+          <p class="hero-subtitle">Upload any generated PDF and provide its expected hash to verify mathematical integrity against our HMAC-SHA256 engine.</p>
+        </div>
+      </div>
+
+      <div class="verify-layout">
+        <div class="card verify-card">
+          <div class="upload-dropzone" id="dropZone">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.5">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            <h3>Drag & Drop PDF file here</h3>
+            <p>or click to browse your computer for a PDF document</p>
+            <input type="file" id="verifyFileInput" accept=".pdf" class="hidden-file-input">
+            <button type="button" id="btnSelectFile" class="btn-secondary">Browse File</button>
+            <div id="selectedFileInfo" class="selected-file-info hidden">
+              <span id="selectedFileName"></span>
+              <span id="selectedFileSize"></span>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 20px;">
+            <label for="verifyExpectedHash">Expected HMAC-SHA256 Signature</label>
+            <input type="text" id="verifyExpectedHash" placeholder="Enter 64-character hex hash or let it auto-fill from recently generated PDF">
+          </div>
+
+          <button id="btnExecuteVerify" class="btn-primary-action" style="margin-top: 15px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            Verify Document Integrity
+          </button>
+
+          <div id="verificationResultAlert" class="verify-result hidden">
+            <div class="result-badge" id="resultBadge"></div>
+            <p id="resultMessage" class="result-message"></p>
+            <div class="hash-comparison">
+              <div><strong>Computed Hash:</strong> <code id="resultComputedHash"></code></div>
+              <div><strong>Expected Hash:</strong> <code id="resultExpectedHash"></code></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="monitorTab" class="tab-pane">
+      <div class="hero-bar">
+        <div>
+          <h2 class="hero-title">Microservice Architecture & Telemetry</h2>
+          <p class="hero-subtitle">Real-time Node.js runtime stats, Bull priority queues, and Puppeteer headless browser telemetry.</p>
+        </div>
+      </div>
+
+      <div class="monitor-grid">
+        <div class="stat-card">
+          <div class="stat-icon">⚡</div>
+          <div class="stat-info">
+            <span class="stat-label">Worker Concurrency</span>
+            <span class="stat-value">4 Parallel Workers</span>
+            <span class="stat-desc">512MB RAM cap per Puppeteer worker</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📥</div>
+          <div class="stat-info">
+            <span class="stat-label">Queue Architecture</span>
+            <span class="stat-value">Bull + Redis</span>
+            <span class="stat-desc">Priority 1 (Single) / Priority 2 (Bulk)</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🛡️</div>
+          <div class="stat-info">
+            <span class="stat-label">Signing Standard</span>
+            <span class="stat-value">HMAC-SHA256</span>
+            <span class="stat-desc">Server-secret keyed tamper evidence</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💾</div>
+          <div class="stat-info">
+            <span class="stat-label">Storage Backend</span>
+            <span class="stat-value">AWS S3 / Signed URLs</span>
+            <span class="stat-desc">Partitioned by date & document type</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card monitor-details-card">
+        <h3>Live Health Endpoint Data</h3>
+        <p>Real-time data queried from <code>/health</code>:</p>
+        <pre id="healthJsonOutput" class="code-box">Loading telemetry data...</pre>
+        <button id="btnRefreshHealth" class="btn-secondary" style="margin-top: 15px;">Refresh Telemetry</button>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-container">
+      <span>ApexERP Microservice • Node.js 20 • Puppeteer • Bull Queue • PostgreSQL • AWS S3</span>
+      <div class="footer-links">
+        <a href="/admin/queues" target="_blank">Bull Board UI</a>
+        <a href="/health" target="_blank">Health JSON</a>
+        <a href="https://github.com/msunil06/PDF-Generation-Microservice-for-an-ERP-Application" target="_blank">GitHub Repo</a>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "pdf-generation-microservice-for-an-erp-application",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "npm --prefix pdf-service start",
+    "dev": "npm --prefix pdf-service run dev",
+    "test": "npm --prefix pdf-service test",
+    "generate:sample": "npm --prefix pdf-service run generate:sample",
+    "generate:custom": "npm --prefix pdf-service run generate:custom"
+  }
+}
